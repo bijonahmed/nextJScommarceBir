@@ -335,6 +335,79 @@ class PublicController extends Controller
         try {
             $categories = ProductCategory::where('status', 1)->where('tabs_status', 1)->orderBy('sorting', 'asc')->get();
             $grouped    = $categories->groupBy('parent_id');
+            // 🔹 Recursive closure to build tree
+            $buildTree = function ($parentId) use (&$buildTree, $grouped) {
+                return $grouped->get($parentId, collect())->map(function ($category) use ($buildTree, $grouped) {
+
+                    // Get up to 6 products for this category
+                    $filterProducts = Product::where('categoryId', $category->id)
+                        ->where('status', 1)
+                        ->limit(6)
+                        ->get()
+                        ->map(function ($product) {
+                            return [
+                                'id'    => $product->id,
+                                'name'  => $product->name,
+                                'slug'  => $product->slug,
+                                'price' => $product->price,
+                                'discount_price' => $product->discount_price,
+                                'thumbnail'      => $product->thumnail_img ? url($product->thumnail_img) : null,
+                            ];
+                        });
+
+                    // Recursively build child categories
+                    $children = $buildTree($category->id)->take(10);
+
+                    // 🔹 Check if any category has parent_child_id = current category id
+                   $hasInSubCategory = $category->where('parent_child_id', $category->id)->first();
+
+                      
+
+                    return [
+                        'id'              => $category->id,
+                        'name'            => $category->name,
+                        'slug'            => $category->slug,
+                        'parent_id'       => $category->parent_id,
+                        'thumbnail_image' => $category->thumbnail_image ? url($category->thumbnail_image) : null,
+                        'banner_image'    => $category->banner_image ? url($category->banner_image) : null,
+                        'children'        => $children,       // nested categories
+                        'products'        => $filterProducts, // related products
+                        'insub_category'  => $hasInSubCategory ? true : false, // 🔹 new flag
+                    ];
+                });
+            };
+
+
+
+            // 🔹 Start recursion from root categories (parent_id = 0)
+            $nestedCategories = $buildTree(0);
+
+            // 🔹 Return JSON
+            return response()->json([
+                'success' => true,
+                'data'    => $nestedCategories,
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Category fetch failed: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch categories. Please try again later.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+    /*
+    public function productsCategory(Request $request)
+    {
+        try {
+            $categories = ProductCategory::where('status', 1)->where('tabs_status', 1)->orderBy('sorting', 'asc')->get();
+            $grouped    = $categories->groupBy('parent_id');
             // Recursive closure
             $buildTree = function ($parentId) use (&$buildTree, $grouped) {
                 return $grouped->get($parentId, collect())->map(function ($category) use ($buildTree) {
@@ -385,6 +458,7 @@ class PublicController extends Controller
             ], 500);
         }
     }
+        */
 
     public function productsCategoryAllData(Request $request)
     {
