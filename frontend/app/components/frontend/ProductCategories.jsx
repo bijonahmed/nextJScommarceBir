@@ -39,8 +39,9 @@ export default function ProductCategories() {
     fetchProducts(item.slug);
   };
 
-  const handleCardClick = (slug) => {
-    router.push(`/shop-product-categories/${slug}`);
+  const handleCardClick = (item) => {
+  
+    router.push(`/shop-product-categories/${item.slug}`);
   };
 
   const fetchProducts = async (parentId, slug, childId, bannerImage) => {
