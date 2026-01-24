@@ -88,9 +88,9 @@ class PublicController extends Controller
 
 
         $filterProducts = Product::where('subcategoryId', $checkCategories->id)
+            ->where('status', 1)
             ->limit(6)
             ->get()
-            ->where('status', 1)
             ->map(function ($product) {
                 return [
                     'id'    => $product->id,
@@ -166,6 +166,37 @@ class PublicController extends Controller
             'product' => $get_products,
         ]);
     }
+
+
+
+    public function getChildDataOnly(Request $request)
+    {
+
+        $parent_id       = $request->parent_id;
+        $checkCategories = ProductCategory::where('parent_id', $parent_id)->get();
+
+
+        return response()->json([
+            'success' => true,
+            'childData' => $checkCategories,
+        ]);
+    }
+
+
+    public function getChildChildDataOnly(Request $request)
+    {
+
+        $parent_child_id   = $request->parent_child_id;
+        $checkCategories   = ProductCategory::where('parent_child_id', $parent_child_id)->get();
+
+        return response()->json([
+            'success'     => true,
+            'inChildData' => $checkCategories,
+        ]);
+    }
+
+
+
 
     public function getsAllproductsBySubCategories(Request $request)
     {
@@ -276,12 +307,14 @@ class PublicController extends Controller
         $offset                 = $request->query('offset', 0);
         $limit                  = $request->query('limit', 40);
         $query                  = Product::where('status', 1);
+
         if ($category_id) {
             $query->where('categoryId', $category_id);
         }
         if ($subcategory_id) {
             $query->where('subcategoryId', $subcategory_id);
         }
+
         $products = $query->orderBy('id', 'desc')
             ->skip($offset)
             ->take($limit)
@@ -300,9 +333,19 @@ class PublicController extends Controller
                 'currency'          => 'Tk.',
             ];
         });
+
+        $categories = ProductCategory::where('status', 1)->where('parent_id', 0)->where('tabs_status', 1)->get()->map(function ($category) {
+            return [
+                'id'                => $category->id,
+                'name'              => $category->name,
+                'categorySlug'      => $category->slug,
+            ];
+        });
+
         return response()->json([
             'success' => true,
             'product' => $get_products,
+            'categories' => $categories,
         ]);
     }
     public function getCategoryParent()
@@ -359,9 +402,9 @@ class PublicController extends Controller
                     $children = $buildTree($category->id)->take(10);
 
                     // 🔹 Check if any category has parent_child_id = current category id
-                   $hasInSubCategory = $category->where('parent_child_id', $category->id)->first();
+                    $hasInSubCategory = $category->where('parent_child_id', $category->id)->first();
 
-                      
+
 
                     return [
                         'id'              => $category->id,
@@ -546,6 +589,31 @@ class PublicController extends Controller
             'product' => $get_prdoucts,
         ]);
     }
+
+
+    public function getInSubProducts(Request $request)
+    {
+        // dd($request->all());
+        $product = Product::where('status', 1)->where('inSubcategoryId', $request->id)->orderBy('id', 'desc')->get();
+        $get_prdoucts = $product->map(function ($data) {
+            return [
+                'id'              => $data->id,
+                'name'            => $data->name,
+                'slug'            => $data->slug,
+                'price'           => $data->price,
+                'discount_price'  => $data->discount_price,
+                'thumnail_img'    => $data->thumnail_img ? url($data->thumnail_img) : null,
+                'vendor'          => 'BIR GROUP',
+            ];
+        });
+        // Return a 404 response if not found
+        return response()->json([
+            'success'               => true,
+            'product'               => $get_prdoucts,
+        ], 200);
+    }
+
+
     public function getProducts()
     {
         $product = Product::where('status', 1)->limit(12)->orderBy('id', 'desc')->get();
@@ -566,6 +634,9 @@ class PublicController extends Controller
             'product'               => $get_prdoucts,
         ], 200);
     }
+
+
+
     public function getsPost(Request $request)
     {
         $category_id = $request->query('category_id');

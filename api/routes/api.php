@@ -33,11 +33,15 @@ Route::prefix('public')->group(function () {
     Route::get('/productsCategory', [PublicController::class, 'productsCategory']);
     Route::get('/productsCategoryAllData', [PublicController::class, 'productsCategoryAllData']);
     Route::get('/getProducts', [PublicController::class, 'getProducts']);
+    Route::get('/getInSubProducts', [PublicController::class, 'getInSubProducts']);
     Route::get('/search-products', [PublicController::class, 'searchProducts']);
     Route::get('/getsAllproducts', [PublicController::class, 'getsAllproducts']);
     Route::get('/getsAllproductsByCategories', [PublicController::class, 'getsAllproductsByCategories']);
     Route::get('/getsAllproductsBySubCategories', [PublicController::class, 'getsAllproductsBySubCategories']);
+    Route::get('/getChildDataOnly', [PublicController::class, 'getChildDataOnly']);
+    Route::get('/getChildChildDataOnly', [PublicController::class, 'getChildChildDataOnly']);
     Route::get('/getsAllproductsByInSubCategories', [PublicController::class, 'getsAllproductsByInSubCategories']);
+
     Route::get('/checkProductDetails/{slug}', [PublicController::class, 'checkProductDetails']);
     Route::get('/getsPost', [PublicController::class, 'getsPost']);
     Route::get('/checkedPostRow/{slug}', [PublicController::class, 'checkedPostRow']);

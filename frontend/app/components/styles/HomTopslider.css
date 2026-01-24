@@ -35,7 +35,7 @@
 /* MOBILE: iPhone / small devices <640px */
 @media (max-width: 639px) {
   .slider-image {
-    height: 140px;             /* small mobile height */
+    height: 100px;             /* small mobile height */
     padding-left: 4px;         /* like bootstrap container */
     padding-right: 4px;        /* like bootstrap container */
     box-sizing: border-box;    /* include padding in width */
@@ -78,7 +78,7 @@
 /* Large desktop ≥1536px */
 @media (min-width: 1536px) {
   .slider-image {
-    height: 450px;
+    height: 350px;
   }
   .slider-image img {
     width: 100%;

@@ -54,27 +54,15 @@ export default function ShopPage() {
   const [ChildCategorys, setChildCategory] = useState([]);
   const [inChildCategory, setInChildCategory] = useState([]);
   const [inSubProducts, setInSubProducts] = useState([]);
-  const [inSelectedSubcategory, setInSelectedSubcategory] = useState(null);
   const shopContainerRef = useRef(null);
   const lastScrollY = useRef(0);
 
-  const {
-    products: hookProducts,
-    getCategories,
-    loading,
-    hasMore,
-    loadMore,
-  } = useProducts(40, selectedCategory, selectedSubcategory);
+  const { products ? products: inSubProducts, getCategories, loading, hasMore, loadMore } = useProducts(
+    40,
+    selectedCategory,
+    selectedSubcategory,
+  );
 
-  // Conditional products: hookProducts or inSubProducts
-  const displayedProducts =
-    inSubProducts && inSubProducts.length > 0
-      ? inSubProducts
-      : hookProducts && hookProducts.length > 0
-        ? hookProducts
-        : [];
-
-  // console.log("displayedProducts:" + displayedProducts);
   // Prevent default empty links
   useEffect(() => {
     const root = shopContainerRef.current ?? document;
@@ -91,7 +79,6 @@ export default function ShopPage() {
     return () => root.removeEventListener("click", clickHandler);
   }, []);
 
-  useEffect(() => {}, [hookProducts, inSubProducts]);
   // Restore scroll after loading more products
   useEffect(() => {
     if (!loading && lastScrollY.current) {
@@ -249,6 +236,14 @@ export default function ShopPage() {
     loadMore();
   };
 
+  if (loading && (!products || products.length === 0)) {
+    return (
+      <div className="darkness-loader-overlay">
+        <div className="darkness-spinner"></div>
+      </div>
+    );
+  }
+
   return (
     <div ref={shopContainerRef}>
       <div className="bg-white">
@@ -371,27 +366,22 @@ export default function ShopPage() {
                     {inChildCategory.map((item) => (
                       <button
                         key={item.id}
-                        onClick={() => {
-                          // Toggle selection using inSelectedSubcategory
-                          if (inSelectedSubcategory === item.id) {
-                            setInSelectedSubcategory(null); // deselect if already selected
-                            setInSubProducts([]); // clear products
-                          } else {
-                            setInSelectedSubcategory(item.id); // select
-                            handleSelectSubCat(item.id); // fetch products
-                          }
-                        }}
+                        onClick={() => handleSelectSubCat(item.id)}
                         style={{
                           flex: "0 0 auto",
                           padding: "8px 12px",
                           borderRadius: "999px",
                           border: "1px solid #fcb800",
                           background:
-                            inSelectedSubcategory === item.id
+                            selectedCategory === item.id ||
+                            selectedSubcategory === item.id
                               ? "#fcb800"
                               : "#fff",
                           color:
-                            inSelectedSubcategory === item.id ? "#000" : "#333",
+                            selectedCategory === item.id ||
+                            selectedSubcategory === item.id
+                              ? "#000"
+                              : "#333",
                           fontSize: "14px",
                           fontWeight: 500,
                           whiteSpace: "nowrap",
@@ -406,12 +396,12 @@ export default function ShopPage() {
                 </>
               )}
             </div>
-
+          
             <div className="ps-layout--shop mt-2">
               <div className="ps-layout___right">
                 <div className="ps-shopping ps-tab-root">
                   <div className="ps-shopping__header">
-                    {/* <pre>{JSON.stringify(inSubProducts, null, 2)}</pre>  */}
+                     {/* <pre>{JSON.stringify(inSubProducts, null, 2)}</pre>  */}
 
                     <p>All Products</p>
                     <div className="ps-shopping__actions">
@@ -449,8 +439,7 @@ export default function ShopPage() {
                     {activeTab === "grid" && (
                       <div className="ps-shopping-product">
                         <div className="row">
-                          {/* <pre>{JSON.stringify(displayedProducts,null,2)}</pre> */}
-                          {displayedProducts.map((product) => (
+                          {products.map((product) => (
                             <div
                               className="col-xl-2 col-lg-6 col-md-4 col-sm-6 col-6 mt-2"
                               key={product.id}
@@ -572,7 +561,7 @@ export default function ShopPage() {
                               </button>
                             </div>
                           )}
-                          {loading && displayedProducts.length > 0 && (
+                          {loading && products.length > 0 && (
                             <div className="text-center mt-3 text-muted">
                               Loading more products...
                             </div>
@@ -589,7 +578,7 @@ export default function ShopPage() {
                     {/* List View */}
                     {activeTab === "list" && (
                       <div className="ps-shopping-product">
-                        {displayedProducts.map((product) => (
+                        {products.map((product) => (
                           <div
                             className="ps-product ps-product--wide"
                             key={product.id}

@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 export default function useProducts(
   limit = 40,
   categoryId = null,
-  subcategoryId = null
+  subcategoryId = null,
 ) {
   const [products, setProducts] = useState([]);
+  const [getCategories, setCategories] = useState([]);
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -16,12 +17,10 @@ export default function useProducts(
     try {
       let url = `${process.env.NEXT_PUBLIC_API_BASE}/public/getsAllproducts?offset=${currentOffset}&limit=${limit}`;
 
-    
       if (categoryId != null && categoryId !== "") {
         url += `&category_id=${categoryId}`;
       }
 
-     
       if (subcategoryId != null && subcategoryId !== "") {
         url += `&subcategory_id=${subcategoryId}`;
       }
@@ -32,8 +31,9 @@ export default function useProducts(
       if (result.success && Array.isArray(result.product)) {
         if (result.product.length > 0) {
           setProducts((prev) =>
-            append ? [...prev, ...result.product] : result.product
+            append ? [...prev, ...result.product] : result.product,
           );
+          setCategories(result.categories);
           setHasMore(result.product.length === limit);
         } else {
           setProducts([]);
@@ -62,5 +62,5 @@ export default function useProducts(
     fetchProducts(newOffset, true);
   };
 
-  return { products, loading, hasMore, loadMore };
+  return { products, getCategories, loading, hasMore, loadMore };
 }

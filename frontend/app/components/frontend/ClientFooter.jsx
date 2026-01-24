@@ -2,8 +2,25 @@
 "use client"; // Must be top
 
 import Link from "next/link";
-
+import { useState, useEffect } from "react";
 export default function ClientFooter() {
+  const [showScroll, setShowScroll] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScroll(window.scrollY > 300);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
   return (
     <footer className="ps-footer">
       <div className="container">
@@ -84,6 +101,52 @@ export default function ClientFooter() {
             </ul>
           </aside>
         </div>
+        {/* Scroll To Top Button */}
+        {showScroll && (
+          <button
+            onClick={scrollToTop}
+            style={{
+              position: "fixed",
+              bottom: "30px",
+              right: "30px",
+              zIndex: 999,
+              width: "45px",
+              height: "45px",
+              borderRadius: "50%",
+              border: "none",
+              background: "#eccc12",
+              color: "#fff",
+              cursor: "pointer",
+            }}
+            aria-label="Scroll to top"
+          >
+            ↑
+          </button>
+        )}
+        {/* WhatsApp fixed button */}
+        <a
+          href="https://wa.me/8801915728982"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            position: "fixed",
+            top: "750px", // <-- fixed distance from top
+            right: "20px", // distance from right edge
+            backgroundColor: "#25D366",
+            color: "#fff",
+            borderRadius: "50%",
+            width: "60px",
+            height: "60px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
+            textDecoration: "none",
+          }}
+        >
+          <i className="fa-brands fa-whatsapp" style={{ fontSize: "28px" }}></i>
+        </a>
 
         <div className="ps-footer__copyright d-flex justify-content-center">
           <p>

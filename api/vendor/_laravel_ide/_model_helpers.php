@@ -3064,9 +3064,9 @@ namespace App\Models {
      *
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
-     * @property mixed $tabs_status
      * @property string|null $banner_image
      * @property string|null $thumbnail_image
+     * @property mixed $tabs_status
      * @property mixed $status
      * @property string|null $insubCategoryImage
      * @property string|null $banner_sub_cat_image
@@ -3092,9 +3092,9 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<ProductCategory>|ProductCategory whereBannerSubCatImage($value)
      * @method static \Illuminate\Database\Eloquent\Builder<ProductCategory>|ProductCategory whereInsubcategoryimage($value)
      * @method static \Illuminate\Database\Eloquent\Builder<ProductCategory>|ProductCategory whereStatus($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<ProductCategory>|ProductCategory whereTabsStatus($value)
      * @method static \Illuminate\Database\Eloquent\Builder<ProductCategory>|ProductCategory whereThumbnailImage($value)
      * @method static \Illuminate\Database\Eloquent\Builder<ProductCategory>|ProductCategory whereBannerImage($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<ProductCategory>|ProductCategory whereTabsStatus($value)
      * @method static \Illuminate\Database\Eloquent\Builder<ProductCategory>|ProductCategory whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<ProductCategory>|ProductCategory whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<ProductCategory>|ProductCategory newModelQuery()
