@@ -73,7 +73,6 @@ export default function ShopPage() {
       : hookProducts && hookProducts.length > 0
         ? hookProducts
         : [];
-
   // console.log("displayedProducts:" + displayedProducts);
   // Prevent default empty links
   useEffect(() => {
@@ -454,6 +453,11 @@ export default function ShopPage() {
                             <div
                               className="col-xl-2 col-lg-6 col-md-4 col-sm-6 col-6 mt-2"
                               key={product.id}
+                              style={{
+                                textOverflow: "ellipsis",
+                                cursor: "pointer",
+                              }}
+                              title={product.fname}
                             >
                               <div
                                 className="ps-product h-100 bg-white"
@@ -593,6 +597,11 @@ export default function ShopPage() {
                           <div
                             className="ps-product ps-product--wide"
                             key={product.id}
+                            style={{
+                              textOverflow: "ellipsis",
+                              cursor: "pointer",
+                            }}
+                            title={product.fname}
                           >
                             <div className="ps-product__thumbnail">
                               <Link href={`/product-details/${product.slug}`}>

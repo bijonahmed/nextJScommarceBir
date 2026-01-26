@@ -40,7 +40,6 @@ export default function ProductCategories() {
   };
 
   const handleCardClick = (item) => {
-  
     router.push(`/shop-product-categories/${item.slug}`);
   };
 
@@ -232,6 +231,35 @@ export default function ProductCategories() {
                   </li>
                 )}
               </ul>
+
+              <Link
+                href={`/product-categories/${parent.slug}`}
+                style={{
+                  display: "inline-block",
+                  marginTop: "20px",
+                  padding: "10px 20px",
+                  borderRadius: "25px",
+                  background: "linear-gradient(135deg, #facc15, #f59e0b)",
+                  color: "#1f2937",
+                  fontWeight: "700",
+                  fontSize: "14px",
+                  textDecoration: "none",
+                  boxShadow: "0 8px 20px rgba(245,158,11,0.4)",
+                  transition: "all 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow =
+                    "0 12px 25px rgba(245,158,11,0.55)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow =
+                    "0 8px 20px rgba(245,158,11,0.4)";
+                }}
+              >
+                View All →
+              </Link>
             </div>
 
             {/* Category Banner */}
@@ -256,6 +284,11 @@ export default function ProductCategories() {
                   <div
                     key={`${parent.id}-${product.id}`}
                     className="ps-product ps-product--simple"
+                    style={{
+                      textOverflow: "ellipsis",
+                      cursor: "pointer",
+                    }}
+                    title={product.fname}
                   >
                     <div
                       className={`image-wrapper ps-product__thumbnail ${loaded ? "loaded" : ""}`}

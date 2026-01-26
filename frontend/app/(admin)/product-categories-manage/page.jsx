@@ -36,7 +36,7 @@ export default function UserPage() {
   const [subcategoryList, setSubCategories] = useState([]);
   const [selectedCategory, setMainCategory] = useState("");
   const [subcategoryName, setSubcategoryName] = useState("");
-  const [statusFilters, setStatusFilters] = useState("");
+  const [statusFilters, setStatusFilters] = useState(1);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
@@ -180,7 +180,7 @@ export default function UserPage() {
       setImageFile(null);
       setImagePreview(null);
       setImageFile(null);
-      setMainCategory("");
+     // setMainCategory("");
       setSubCategoryFilter("");
       setId("");
 

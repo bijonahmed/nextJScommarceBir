@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Attribute;
 use DB;
 use File;
@@ -39,7 +40,7 @@ class PublicController extends Controller
                 return $grouped->get($parentId, collect())->map(function ($category) use ($buildTree) {
                     return [
                         'id'         => $category->id,
-                        'name'       => $category->name,
+                        'name'      => $category->name,
                         'slug'       => $category->slug,
                         'parent_id'  => $category->parent_id,
                         'children'   => $buildTree($category->id),
@@ -94,7 +95,8 @@ class PublicController extends Controller
             ->map(function ($product) {
                 return [
                     'id'    => $product->id,
-                    'name'  => $product->name,
+                    'name' => Str::limit($product->name, 25, '...'),
+                    'fname' => $product->name,
                     'slug'  => $product->slug,
                     'price' => $product->price,
                     'discount_price' => $product->discount_price,
@@ -151,7 +153,8 @@ class PublicController extends Controller
             $checksupplier = Supplier::find($data->supplier_id);
             return [
                 'id'                => $data->id,
-                'name'              => $data->name,
+                'name'              => Str::limit($data->name, 25, '...'),
+                'fname'             => $data->name,
                 'slug'              => $data->slug,
                 'price'             => $data->price,
                 'description_full'  => $data->description_full,
@@ -323,7 +326,8 @@ class PublicController extends Controller
             $checksupplier = Supplier::find($data->supplier_id);
             return [
                 'id'                => $data->id,
-                'name'              => $data->name,
+                'name'              => Str::limit($data->name, 25, '...'),
+                'fname'             => $data->name,
                 'slug'              => $data->slug,
                 'price'             => $data->price,
                 'description_full'  => $data->description_full,
@@ -381,7 +385,6 @@ class PublicController extends Controller
             // 🔹 Recursive closure to build tree
             $buildTree = function ($parentId) use (&$buildTree, $grouped) {
                 return $grouped->get($parentId, collect())->map(function ($category) use ($buildTree, $grouped) {
-
                     // Get up to 6 products for this category
                     $filterProducts = Product::where('categoryId', $category->id)
                         ->where('status', 1)
@@ -390,7 +393,8 @@ class PublicController extends Controller
                         ->map(function ($product) {
                             return [
                                 'id'    => $product->id,
-                                'name'  => $product->name,
+                                'name'  => Str::limit($product->name, 20, '...'),
+                                'fname' => $product->name,
                                 'slug'  => $product->slug,
                                 'price' => $product->price,
                                 'discount_price' => $product->discount_price,
@@ -444,64 +448,6 @@ class PublicController extends Controller
         }
     }
 
-
-    /*
-    public function productsCategory(Request $request)
-    {
-        try {
-            $categories = ProductCategory::where('status', 1)->where('tabs_status', 1)->orderBy('sorting', 'asc')->get();
-            $grouped    = $categories->groupBy('parent_id');
-            // Recursive closure
-            $buildTree = function ($parentId) use (&$buildTree, $grouped) {
-                return $grouped->get($parentId, collect())->map(function ($category) use ($buildTree) {
-                    // Get up to 6 products for this category
-                    $filterProducts = Product::where('categoryId', $category->id)
-                        ->where('status', 1)
-                        ->limit(6)
-                        ->get()
-                        ->map(function ($product) {
-                            return [
-                                'id'    => $product->id,
-                                'name'  => $product->name,
-                                'slug'  => $product->slug,
-                                'price' => $product->price,
-                                'discount_price' => $product->discount_price,
-                                'thumbnail'      => $product->thumnail_img ? url($product->thumnail_img) : null,
-                            ];
-                        });
-                    // Recursively build child categories (limited to 6)
-                    $children = $buildTree($category->id)->take(6);
-                    return [
-                        'id'              => $category->id,
-                        'name'            => $category->name,
-                        'slug'            => $category->slug,
-                        'parent_id'       => $category->parent_id,
-                        'thumbnail_image' => $category->thumbnail_image ? url($category->thumbnail_image) : null,
-                        'banner_image'    => $category->banner_image ? url($category->banner_image) : null,
-                        'children'        => $children,       // nested categories
-                        'products'        => $filterProducts, // related products
-                    ];
-                });
-            };
-            // Start recursion from parent_id = 0 (root)
-            $nestedCategories   = $buildTree(0);
-            return response()->json([
-                'success'     => true,
-                'data'        => $nestedCategories,
-            ], 200);
-        } catch (\Exception $e) {
-            \Log::error('Category fetch failed: ' . $e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch categories. Please try again later.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-        */
 
     public function productsCategoryAllData(Request $request)
     {
