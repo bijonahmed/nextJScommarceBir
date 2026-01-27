@@ -42,6 +42,11 @@ export default function UserPage() {
   const fileInputRef = useRef(null);
   // Sample static subcategory data
 
+  const [filterMainCategory, setFilterMainCategory] = useState("");
+  const [filterParentSub, setFilterParentSub] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+
+ 
   // Fetch subcategories when main category changes
   const handleMainCategoryChange = (e) => {
     const selectedId = e.target.value;
@@ -125,7 +130,7 @@ export default function UserPage() {
       } else {
         setImageFile(null);
         setImagePreview(null);
-          toast.error("Image must be 300x300px or 1000x1000px");
+        toast.error("Image must be 300x300px or 1000x1000px");
       }
 
       URL.revokeObjectURL(objectUrl); // free memory
@@ -180,7 +185,7 @@ export default function UserPage() {
       setImageFile(null);
       setImagePreview(null);
       setImageFile(null);
-     // setMainCategory("");
+      // setMainCategory("");
       setSubCategoryFilter("");
       setId("");
 
@@ -389,7 +394,9 @@ export default function UserPage() {
 
                       {/* Image Upload */}
                       <div className="mb-3">
-                        <label className="form-label">Upload Image (300x300px or 1000x1000px)</label>
+                        <label className="form-label">
+                          Upload Image (300x300px or 1000x1000px)
+                        </label>
                         <input
                           type="file"
                           accept="image/*"
@@ -423,13 +430,60 @@ export default function UserPage() {
 
                 {/* Right Table */}
                 <div className="col-md-8">
+                  <div className="row d-none">
+                    <div className="col-md-4">
+                      <label className="form-label">Main Category</label>
+                      <select
+                        className="form-select"
+                        value={selectedCategory}
+                        onChange={handleMainCategoryChange}
+                      >
+                        <option value="">All Categories</option>
+                        {categoryData.map((cat) => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="col-md-4">
+                      <label className="form-label">Parent Subcategory</label>
+                      <select
+                        className="form-select"
+                        value={subcategoryId}
+                        onChange={(e) => setSubCategoryFilter(e.target.value)}
+                      >
+                        <option value="">All Subcategories</option>
+                        {subcategoryList.map((sub) => (
+                          <option key={sub.id} value={sub.id}>
+                            {sub.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="col-md-4">
+                      <label className="form-label">Status</label>
+                      <select
+                        className="form-select"
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value)}
+                      >
+                        <option value="">All</option>
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                      </select>
+                    </div>
+                  </div>
+
                   <button
-                    className="btn btn-outline-secondary w-100"
+                    className="btn btn-outline-secondary w-100 mt-2"
                     onClick={fetchProCategory}
                   >
                     Fetch
                   </button>
-                  <div className="card card-outline card-secondary mt-1">
+                  <div className="card card-outline card-secondary mt-3">
                     <div className="card-header">
                       <h5 className="card-title mb-0">In Subcategory List</h5>
                     </div>

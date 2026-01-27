@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Banner\BannerController;
 use App\Http\Controllers\Api\Categories\CategoryController;
@@ -21,7 +20,6 @@ use App\Http\Controllers\Api\PurchaseOrder\PurchaseOrderController;
 use App\Http\Controllers\Api\Settings\SettingsController;
 use App\Http\Controllers\Api\Supplier\SupplierController;
 use Illuminate\Support\Facades\Route;
-
 Route::middleware('api')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('api.register');
     Route::post('/login', [AuthController::class, 'login'])->name('api.login');
@@ -41,7 +39,6 @@ Route::prefix('public')->group(function () {
     Route::get('/getChildDataOnly', [PublicController::class, 'getChildDataOnly']);
     Route::get('/getChildChildDataOnly', [PublicController::class, 'getChildChildDataOnly']);
     Route::get('/getsAllproductsByInSubCategories', [PublicController::class, 'getsAllproductsByInSubCategories']);
-
     Route::get('/checkProductDetails/{slug}', [PublicController::class, 'checkProductDetails']);
     Route::get('/getsPost', [PublicController::class, 'getsPost']);
     Route::get('/checkedPostRow/{slug}', [PublicController::class, 'checkedPostRow']);
@@ -50,14 +47,10 @@ Route::prefix('public')->group(function () {
     Route::get('/getSetting', [PublicController::class, 'getSetting']);
     Route::get('/callback-hook', [PublicController::class, 'testApiCallbackHook']);
 });
-
-
-
 Route::prefix('confirOrders')->group(function () {
     Route::post('/confirm-order', [ConfirmOrdersController::class, 'confirmOrder']);
     Route::get('/getOrderCustomer', [ConfirmOrdersController::class, 'getOrderCustomer']);
 });
-
 Route::middleware(['auth:api'])->group(function () {
     // User
     Route::get('/profile', [AuthController::class, 'profile']);
@@ -65,32 +58,25 @@ Route::middleware(['auth:api'])->group(function () {
     Route::put('/updateCustomerProfile', [AuthController::class, 'updateCustomerProfile']);
     Route::post('/changePassword', [AuthController::class, 'changePassword']);
     Route::post('/customerChangePassword', [AuthController::class, 'customerChangePassword']);
-
-
     Route::prefix('setting')->group(function () {
         Route::get('/settingrow', [SettingsController::class, 'settingrow']);
         Route::post('/upateSetting', [SettingsController::class, 'upateSetting']);
     });
-
-
     Route::prefix('dashbaord')->group(function () {
         Route::get('/getDashboardData', [DashboardController::class, 'getDashboardData']);
     });
-
     Route::prefix('customer')->group(function () {
         Route::get('/index', [CustomerController::class, 'index']);
         Route::get('/getOrderCustomer', [CustomerController::class, 'getOrderCustomer']);
         Route::get('/getOnlyOrderData', [CustomerController::class, 'getOnlyOrderData']);
         Route::get('/getCustomerLists', [CustomerController::class, 'getCustomerLists']);
     });
-
     Route::prefix('banner')->group(function () {
         Route::get('/index', [BannerController::class, 'index']);
         Route::post('/SliderStore', [BannerController::class, 'SliderStore']);
         Route::post('/bannerStore', [BannerController::class, 'bannerStore']);
         Route::post('/deleteHomeSlider', [BannerController::class, 'destroyHomeSlider']);
     });
-
     Route::prefix('product-category')->group(function () {
         Route::get('/index', [ProductCategoryController::class, 'index']);
         Route::post('/create', [ProductCategoryController::class, 'store']);
@@ -112,8 +98,6 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/chkrow/{id}', [SupplierController::class, 'checkrow']);
         Route::post('/updateData', [SupplierController::class, 'update']);
     });
-
-
     Route::prefix('purchase')->group(function () {
         Route::get('/index', [PurchaseOrderController::class, 'index']);
         Route::get('/sendToTransferProduct/{id}', [PurchaseOrderController::class, 'sendToTransferProduct']);
@@ -122,7 +106,6 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/chkrow/{id}', [PurchaseOrderController::class, 'checkrow']);
         Route::post('/update', [PurchaseOrderController::class, 'update']);
     });
-
     Route::prefix('product')->group(function () {
         Route::get('/index', [ProductsController::class, 'index']);
         // Route::get('/sendToTransferProduct/{id}', [PurchaseOrderController::class, 'sendToTransferProduct']);
@@ -133,15 +116,11 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/update', [ProductsController::class, 'update']);
         Route::post('/gallery-delete', [ProductsController::class, 'deleteGalleryImage']);
     });
-
-
-
     Route::prefix('orders')->group(function () {
         Route::get('/index', [OrdersController::class, 'index']);
         Route::get('/getOrderStatusList', [OrdersController::class, 'getOrderStatusList']);
         Route::post('/orderUpdate', [OrdersController::class, 'orderUpdate']);
     });
-
     Route::prefix('deliveryAssign')->group(function () {
         Route::post('/checkInitialized', [GatewayController::class, 'checkInitialized']);
         Route::post('/checkZone', [GatewayController::class, 'checkZone']);
@@ -149,15 +128,11 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/sendMerchant', [GatewayController::class, 'sendMerchant']);
         Route::get('/checkPathaoResponseOrder', [GatewayController::class, 'checkPathaoResponseOrder']);
     });
-
-
     Route::prefix('inventory')->group(function () {
         Route::get('/index', [InventoryController::class, 'index']);
         Route::get('/searchproductId', [InventoryController::class, 'searchproductId']);
         Route::post('/add-stock', [InventoryController::class, 'addStock']);
     });
-
-
     Route::prefix('roles')->group(function () {
         Route::get('/index', [RolesController::class, 'index']);
         Route::post('/create', [RolesController::class, 'store']);

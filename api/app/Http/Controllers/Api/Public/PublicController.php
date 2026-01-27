@@ -176,7 +176,7 @@ class PublicController extends Controller
     {
 
         $parent_id       = $request->parent_id;
-        $checkCategories = ProductCategory::where('parent_id', $parent_id)->get();
+        $checkCategories = ProductCategory::where('parent_id', $parent_id)->where('status', 1)->get();
 
 
         return response()->json([
@@ -190,7 +190,7 @@ class PublicController extends Controller
     {
 
         $parent_child_id   = $request->parent_child_id;
-        $checkCategories   = ProductCategory::where('parent_child_id', $parent_child_id)->get();
+        $checkCategories   = ProductCategory::where('parent_child_id', $parent_child_id)->where('status', 1)->get();
 
         return response()->json([
             'success'     => true,

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import Slider from "../../components/frontend/Slider";
+import Slider from "../../components/frontend/SliderShop";
 import useProducts from "../../hooks/getProducts";
 import "../../components/styles/darknessLoader.css";
 import "../../components/styles/beforeLoading.css";

@@ -78,7 +78,7 @@
 /* Large desktop ≥1536px */
 @media (min-width: 1536px) {
   .slider-image {
-    height: 440px;
+    height: 350px;
   }
   .slider-image img {
     width: 100%;

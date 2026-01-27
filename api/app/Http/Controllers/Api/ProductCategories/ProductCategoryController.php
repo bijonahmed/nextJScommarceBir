@@ -45,6 +45,7 @@ class ProductCategoryController extends Controller
             });
 
             $insubCateogry = ProductCategory::where('tabs_status', 2)
+
                 ->orderBy('id', 'desc')
                 ->get()
                 ->map(function ($item) {
@@ -68,8 +69,6 @@ class ProductCategoryController extends Controller
                             }
                         }
                     }
-
-                    // 🔹 Image URL safe
                     if (!empty($item->insubCategoryImage)) {
                         $item->insubCategoryImage = url($item->insubCategoryImage);
                     }
@@ -99,7 +98,7 @@ class ProductCategoryController extends Controller
     public function insubcategory(Request $request)
     {
 
-       // dd($request->all());
+        // dd($request->all());
 
         $user = Auth::user();
         if (! $user->can('view product category')) {
