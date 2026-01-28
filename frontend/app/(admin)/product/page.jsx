@@ -291,6 +291,13 @@ export default function ProductPage() {
       },
     },
   };
+
+  useEffect(() => {
+  // Trigger the fetch automatically on component mount
+  setSearch((prev) => prev + " "); // same as button click
+}, []);
+
+
   /* ---------------- PERMISSION ---------------- */
   if (!perms.includes("view posts")) {
     router.replace("/dashboard");

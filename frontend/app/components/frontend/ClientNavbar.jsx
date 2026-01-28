@@ -128,7 +128,7 @@ export default function ClientNavbar() {
               data-sticky="true"
               style={{
                 position: "fixed",
-                top: 0,
+                top: 10,
                 left: 0,
                 width: "100%",
                 zIndex: 1000,
@@ -270,7 +270,7 @@ export default function ClientNavbar() {
                               cart.map((item) => (
                                 <div
                                   key={`${item.id}-${JSON.stringify(
-                                    item.selectedAttr
+                                    item.selectedAttr,
                                   )}`}
                                   className="ps-product--cart-mobile"
                                 >
@@ -315,7 +315,7 @@ export default function ClientNavbar() {
                                 {cart
                                   .reduce(
                                     (acc, item) => acc + item.price * item.qty,
-                                    0
+                                    0,
                                   )
                                   .toFixed(2)}
                               </strong>

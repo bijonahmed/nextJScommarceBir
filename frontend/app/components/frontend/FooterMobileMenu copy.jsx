@@ -372,7 +372,6 @@ export default function SidebarSystem() {
         </div>
         {/* End Search*/}
       </div>
-      
     </div>
   );
 }

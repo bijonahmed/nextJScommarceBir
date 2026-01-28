@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+//import "../../components/styles/footer.css";
 export default function ClientFooter() {
   const [showScroll, setShowScroll] = useState(false);
 
@@ -22,7 +23,43 @@ export default function ClientFooter() {
     });
   };
   return (
+    
     <footer className="ps-footer">
+      <style jsx>{`
+  /* Mobile view: center footer widgets and social icons */
+  @media (max-width: 768px) {
+    .ps-footer__widgets {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .ps-footer__widgets .widget {
+      width: 100%; /* take full width for mobile */
+      margin-bottom: 20px;
+    }
+
+    .ps-footer__widgets .widget h3,
+    .ps-footer__widgets .widget h4,
+    .ps-footer__widgets .widget p,
+    .ps-footer__widgets .widget ul,
+    .ps-footer__widgets .widget li {
+      text-align: center; /* center all text and lists */
+    }
+
+    .ps-footer__widgets .ps-list--social {
+      display: flex; /* make flex container */
+      justify-content: center; /* center horizontally */
+      padding-left: 0; /* remove default ul padding */
+      list-style: none; /* remove bullets */
+    }
+
+    .ps-footer__widgets .ps-list--social li {
+      margin: 0 5px; /* spacing between icons */
+    }
+  }
+`}</style>
       <div className="container">
         <div className="ps-footer__widgets">
           <aside className="widget widget_footer widget_contact-us">

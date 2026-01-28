@@ -533,6 +533,7 @@ export default function ShopPage() {
                                         display: "block",
                                         fontWeight: "500",
                                         marginBottom: "4px",
+                                        textAlign:"center"
                                       }}
                                     >
                                       {product.name.length > 20

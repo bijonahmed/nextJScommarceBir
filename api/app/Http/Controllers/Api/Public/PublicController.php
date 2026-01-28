@@ -130,7 +130,54 @@ class PublicController extends Controller
         ]);
     }
 
+    public function inSubcategoryFilter(Request $request)
+    {
+        $slug = $request->slug;
 
+        $checkCategories = ProductCategory::where('slug', $slug)->first();
+
+
+        $filterProducts = Product::where('inSubcategoryId', $checkCategories->id)
+            ->where('status', 1)
+            ->limit(6)
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id'    => $product->id,
+                    'name' => Str::limit($product->name, 25, '...'),
+                    'fname' => $product->name,
+                    'slug'  => $product->slug,
+                    'price' => $product->price,
+                    'discount_price' => $product->discount_price,
+                    'thumbnail'      => $product->thumnail_img ? url($product->thumnail_img) : null,
+                ];
+            });
+        $subcategoryImage = !empty($checkCategories->banner_sub_cat_image) ? url($checkCategories->banner_sub_cat_image) : null;
+
+
+        $checkinSubCategories = ProductCategory::where('parent_child_id', $checkCategories->id)
+            ->where('status', 1) // filter in DB
+            ->get()
+            ->map(function ($cat) {
+                return [
+                    'id'        => $cat->id,
+                    'name'      => $cat->name,
+                    'slug'      => $cat->slug,
+                    'thumbnail' => $cat->insubCategoryImage ? url($cat->insubCategoryImage) : null,
+                ];
+            });
+
+
+        return response()->json([
+            'success' => true,
+            'product' => $filterProducts,
+            'subcategoryImage' => $subcategoryImage,
+            'childId'       => $checkCategories->id ?? null,
+            'subCateName'   => $checkCategories->name ?? null,
+            'checkinSubCategories' => $checkinSubCategories,
+
+        ]);
+    }
     public function getsAllproductsByInSubCategories(Request $request)
     {
         //dd($request->all());
@@ -262,7 +309,7 @@ class PublicController extends Controller
         $limit                  = $request->query('limit', 40);
         $checkCategories        = ProductCategory::where('slug', $slug)->first();
 
-        $checkSubcategories = ProductCategory::where('parent_id', $checkCategories->id)->where('tabs_status', 1)->get();
+        $checkSubcategories = ProductCategory::where('parent_id', $checkCategories->id)->where('tabs_status', 1)->where('status', 1)->get();
 
 
 

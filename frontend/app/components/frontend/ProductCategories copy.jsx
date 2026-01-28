@@ -18,25 +18,19 @@ export default function ProductCategories() {
   const [selectedChildId, setSelectedChildId] = useState({});
   const [selectedParentId, setSelectedParentId] = useState(null);
   const [selectedItemId, setSelectedItemId] = useState(null);
-  const [openDropdowns, setOpenDropdowns] = useState({});
 
-  const toggleDropdown = (id) => {
-    setOpenDropdowns((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
+  const [openChildId, setOpenChildId] = useState(null);
 
   const handleParentClick = (parent, child) => {
+    if (!child || !child.id) return;
+
+    // Toggle: close previous menu if another clicked
+    setOpenChildId((prev) => (prev === child.id ? null : child.id));
+
     setSelectedParentId(child.id); // mark parent as selected
     setSelectedItemId(null); // clear child selection
-    fetchProducts(parent.id, child.slug);
-    if (child.insub_category) toggleDropdown(child.id);
-  };
 
-  const handleChildClick = (item) => {
-    setSelectedItemId(item.id); // mark child as selected
-    fetchProducts(item.slug);
+    fetchProducts(parent.id, child.slug);
   };
 
   const handleCardClick = (item) => {
@@ -68,23 +62,14 @@ export default function ProductCategories() {
           [parentId]: result.childId,
         }));
       } else {
-        setCategoryProducts((prev) => ({
-          ...prev,
-          [parentId]: [],
-        }));
+        setCategoryProducts((prev) => ({ ...prev, [parentId]: [] }));
         setInSubcategory([]);
       }
     } catch (err) {
       console.error("Error fetching products:", err);
-      setCategoryProducts((prev) => ({
-        ...prev,
-        [parentId]: [],
-      }));
+      setCategoryProducts((prev) => ({ ...prev, [parentId]: [] }));
     } finally {
-      setCategoryLoading((prev) => ({
-        ...prev,
-        [parentId]: false,
-      }));
+      setCategoryLoading((prev) => ({ ...prev, [parentId]: false }));
     }
   };
 
@@ -110,7 +95,6 @@ export default function ProductCategories() {
               </div>
             )}
 
-            {/* Category header */}
             <div className="ps-block__categories">
               <h3>
                 <Link href={`/product-categories/${parent.slug}`}>
@@ -126,102 +110,113 @@ export default function ProductCategories() {
                 }}
               >
                 {parent.children && parent.children.length > 0 ? (
-                  parent.children.map((child) => (
-                    <li
-                      key={`${parent.id}-${child.id}`}
-                      style={{
-                        borderBottom: "1px solid #ccc",
-                        padding: "5px 0",
-                      }}
-                    >
-                      <div
+                  parent.children.map((child) => {
+                    if (!child) return null;
+
+                    const filteredSubcategories = (
+                      responseInSubcategory || []
+                    ).filter((item) => item.parentId === child.id);
+
+                    return (
+                      <li
+                        key={`${parent.id}-${child.id}`}
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          cursor: child.insub_category ? "pointer" : "default",
-                          backgroundColor:
-                            selectedParentId === child.id
-                              ? "#fff3cd"
-                              : "transparent",
-                          fontWeight:
-                            selectedParentId === child.id ? "600" : "normal",
-                          padding: "2px 6px",
-                          borderRadius: "4px",
-                          transition: "background-color 0.2s",
+                          borderBottom: "1px solid #ccc",
+                          padding: "5px 0",
                         }}
                       >
-                        <span
-                          style={{ cursor: "pointer" }}
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            cursor: child.insub_category
+                              ? "pointer"
+                              : "default",
+                            backgroundColor:
+                              openChildId === child.id
+                                ? "#fff3cd"
+                                : "transparent",
+                            fontWeight:
+                              openChildId === child.id ? "600" : "normal",
+                            padding: "2px 6px",
+                            borderRadius: "4px",
+                            transition: "background-color 0.2s",
+                          }}
                           onClick={() => handleParentClick(parent, child)}
                         >
-                          {child.name} {child.insub_category}
-                        </span>
+                          <span>{child.name}</span>
 
-                        {child.insub_category && (
-                          <svg
-                            onClick={() => handleParentClick(parent, child)}
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={2}
-                            stroke="currentColor"
+                          {child.insub_category && (
+                            <svg
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleParentClick(parent, child);
+                              }}
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={2}
+                              stroke="currentColor"
+                              style={{
+                                width: "16px",
+                                height: "16px",
+                                marginLeft: "5px",
+                                transform:
+                                  openChildId === child.id
+                                    ? "rotate(180deg)"
+                                    : "rotate(0deg)",
+                                transition: "transform 0.3s ease",
+                                cursor: "pointer",
+                              }}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                          )}
+                        </div>
+
+                        {child.insub_category && openChildId === child.id && (
+                          <ul
                             style={{
-                              width: "16px",
-                              height: "16px",
-                              marginLeft: "5px",
-                              transform: openDropdowns[child.id]
-                                ? "rotate(180deg)"
-                                : "rotate(0deg)",
-                              transition: "transform 0.3s ease",
-                              cursor: "pointer",
+                              listStyle: "none",
+                              padding: 0,
+                              marginTop: "5px",
                             }}
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M19 9l-7 7-7-7"
-                            />
-                          </svg>
+                            {(Array.isArray(responseInSubcategory)
+                              ? responseInSubcategory
+                              : []
+                            ).map((item) => (
+                              <li
+                                key={item.id}
+                                style={{
+                                  padding: "6px 10px",
+                                  cursor: "pointer",
+                                  borderBottom: "1px solid #eee",
+                                  backgroundColor:
+                                    selectedItemId === item.id
+                                      ? "#fff3cd"
+                                      : "transparent",
+                                  fontWeight:
+                                    selectedItemId === item.id
+                                      ? "600"
+                                      : "normal",
+                                  transition: "background-color 0.2s",
+                                }}
+                                onClick={() => handleCardClick(item)}
+                              >
+                                {item.name}
+                              </li>
+                            ))}
+                          </ul>
                         )}
-                      </div>
-
-                      {/* Nested children */}
-                      {child.children && openDropdowns[child.id] && (
-                        <ul
-                          style={{
-                            paddingLeft: "0",
-                            marginTop: "5px",
-                            listStyle: "none",
-                          }}
-                        >
-                          {(Array.isArray(responseInSubcategory)
-                            ? responseInSubcategory
-                            : []
-                          ).map((item) => (
-                            <li
-                              key={item.id}
-                              style={{
-                                padding: "6px 10px",
-                                cursor: "pointer",
-                                borderBottom: "1px solid #eee",
-                                backgroundColor:
-                                  selectedItemId === item.id
-                                    ? "#fff3cd"
-                                    : "transparent",
-                                fontWeight:
-                                  selectedItemId === item.id ? "600" : "normal",
-                                transition: "background-color 0.2s",
-                              }}
-                              onClick={() => handleCardClick(item)}
-                            >
-                              {item.name}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  ))
+                      </li>
+                    );
+                  })
                 ) : (
                   <li
                     key={`no-subcategories-${parent.id}`}
@@ -262,7 +257,6 @@ export default function ProductCategories() {
               </Link>
             </div>
 
-            {/* Category Banner */}
             <div className="ps-block__slider">
               <img
                 loading="lazy"
@@ -277,17 +271,13 @@ export default function ProductCategories() {
               />
             </div>
 
-            {/* Products */}
             {products && products.length > 0 && (
               <div className="ps-block__product-box">
                 {products.map((product) => (
                   <div
                     key={`${parent.id}-${product.id}`}
                     className="ps-product ps-product--simple"
-                    style={{
-                      textOverflow: "ellipsis",
-                      cursor: "pointer",
-                    }}
+                    style={{ textOverflow: "ellipsis", cursor: "pointer" }}
                     title={product.fname}
                   >
                     <div
@@ -307,7 +297,9 @@ export default function ProductCategories() {
                     </div>
                     <div className="ps-product__container">
                       <div className="ps-product__content">
-                        <p className="ps-product__title">{product.name}</p>
+                        <p className="ps-product__title text-center">
+                          {product.name}
+                        </p>
                         <p className="ps-product__price sale">
                           Tk.{product.discount_price ?? "0"}{" "}
                           <del>Tk.{product.price ?? "0"}</del>

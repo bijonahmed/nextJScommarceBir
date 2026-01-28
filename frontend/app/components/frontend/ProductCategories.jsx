@@ -23,18 +23,49 @@ export default function ProductCategories() {
 
   const handleParentClick = (parent, child) => {
     if (!child || !child.id) return;
-
-    // Toggle: close previous menu if another clicked
     setOpenChildId((prev) => (prev === child.id ? null : child.id));
 
-    setSelectedParentId(child.id); // mark parent as selected
-    setSelectedItemId(null); // clear child selection
+    setSelectedParentId(child.id);
+    setSelectedItemId(null);
 
     fetchProducts(parent.id, child.slug);
   };
+  /*
+  const handleCardClick = async (item, parentId) => {
+     router.push(`/shop-product-categories/${item.slug}`);
+  };
+  */
 
-  const handleCardClick = (item) => {
-    router.push(`/shop-product-categories/${item.slug}`);
+  const handleCardClick = async (item, parentId, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      setSelectedItemId(item.id);
+
+      const url = `${process.env.NEXT_PUBLIC_API_BASE}/public/inSubcategoryFilter?slug=${item.slug}`;
+      const res = await fetch(url);
+      const result = await res.json();
+
+      console.log("API result:", result);
+
+      if (result.success && Array.isArray(result.product)) {
+        setCategoryProducts((prev) => ({
+          ...prev,
+          [parentId]: result.product,
+        }));
+
+        // setInSubcategory(result.checkinSubCategories || []);
+        // setSelectedChildId((prev) => ({
+        //   ...prev,
+        //   [parentId]: result.childId,
+        // }));
+      } else {
+        setCategoryProducts((prev) => ({ ...prev, [parentId]: [] }));
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const fetchProducts = async (parentId, slug, childId, bannerImage) => {
@@ -207,7 +238,9 @@ export default function ProductCategories() {
                                       : "normal",
                                   transition: "background-color 0.2s",
                                 }}
-                                onClick={() => handleCardClick(item)}
+                                onClick={(e) =>
+                                  handleCardClick(item, parent.id, e)
+                                }
                               >
                                 {item.name}
                               </li>
@@ -297,7 +330,9 @@ export default function ProductCategories() {
                     </div>
                     <div className="ps-product__container">
                       <div className="ps-product__content">
-                        <p className="ps-product__title">{product.name}</p>
+                        <p className="ps-product__title text-center">
+                          {product.name}
+                        </p>
                         <p className="ps-product__price sale">
                           Tk.{product.discount_price ?? "0"}{" "}
                           <del>Tk.{product.price ?? "0"}</del>
@@ -311,6 +346,13 @@ export default function ProductCategories() {
           </div>
         );
       })}
+      <style>
+        {`
+.collapse.show {
+pointer-events: auto !important;
+}
+`}
+      </style>
     </>
   );
 }
